@@ -6,7 +6,8 @@
 <title>Famous Dhungana — root@portfolio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="icon" href="fambug.jpg" type="image/jpeg">
+<link rel="icon" href="./fambug.jpg" type="image/jpeg">
+<link rel="shortcut icon" href="./fambug.jpg" type="image/jpeg">
 <style>
   :root{
     --void:#0a0d12;
@@ -431,7 +432,7 @@
       <div class="role" id="hero-role"><span class="bracket">[</span>cybersecurity <span class="bracket">·</span> linux<span class="bracket">]</span></div>
       <p class="tagline" id="hero-tagline">I break things to understand them, then build things that don't break. Hunting vulnerabilities by day and building practical projects by night.</p>
       <div class="hero-actions">
-        <a class="btn btn-primary" id="hero-resume" href="Famous_Dhungana_Resume_.pdf" download="Famous_Dhungana_Resume.pdf">⬇ Download CV</a>
+        <a class="btn btn-primary" id="hero-resume" href="Famous_Dhungana_Resume_.pdf" download="Famous_Dhungana_Resume_.pdf">⬇ Download CV</a>
       </div>
     </div>
     <div class="float-stack" aria-hidden="true">
@@ -539,6 +540,13 @@ function escapeHtml(value = '') {
     .replace(/'/g, '&#39;');
 }
 
+function normalizeResumePath(value) {
+  if (!value) return 'Famous_Dhungana_Resume_.pdf';
+  const cleaned = String(value).trim();
+  if (!cleaned) return 'Famous_Dhungana_Resume_.pdf';
+  return cleaned === 'Famous_Dhungana_Resume.pdf' ? 'Famous_Dhungana_Resume_.pdf' : cleaned;
+}
+
 function getHeroData(){
   const hero = privateData.hero;
   if (hero && typeof hero === 'object') {
@@ -547,7 +555,7 @@ function getHeroData(){
       accent: hero.accent || 'Dhungana',
       role: hero.role || 'cybersecurity · linux',
       tagline: hero.tagline || 'I break things to understand them, then build things that don\'t break. Hunting vulnerabilities by day and building practical projects by night.',
-      resume: hero.resume || 'Famous_Dhungana_Resume.pdf'
+      resume: normalizeResumePath(hero.resume)
     };
   }
   return {
@@ -555,7 +563,7 @@ function getHeroData(){
     accent: 'Dhungana',
     role: 'cybersecurity · linux',
     tagline: 'I break things to understand them, then build things that don\'t break. Hunting vulnerabilities by day and building practical projects by night.',
-    resume: 'Famous_Dhungana_Resume.pdf'
+    resume: 'Famous_Dhungana_Resume_.pdf'
   };
 }
 

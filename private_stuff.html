@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Private Setup — Famous</title>
+  <link rel="icon" href="fambug.jpg" type="image/jpeg">
+  <style>
+    :root{ --void:#0a0d12; --panel:#10151c; --border:#232b36; --text:#dfe6ee; --muted:#7c8a9a; --cyan:#6ee7e0; --amber:#ffb454; --green:#8bd17c; --red:#ff6b6b; }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:Inter, Arial, sans-serif;background:var(--void);color:var(--text);min-height:100vh;padding:32px;}
+    .wrap{max-width:900px;margin:0 auto;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:28px;box-shadow:0 20px 50px rgba(0,0,0,0.25);} 
+    a{color:var(--cyan);text-decoration:none;}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:24px;}
+    .top h1{font-size:24px;}
+    .card{border:1px solid var(--border);padding:18px;border-radius:10px;background:rgba(255,255,255,0.03);margin-top:14px;}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    input, textarea, button{width:100%;padding:12px;border-radius:8px;border:1px solid var(--border);background:#0e1419;color:var(--text);font-size:14px;}
+    textarea{min-height:100px;resize:vertical;}
+    .full{grid-column:1 / -1;}
+    button{background:var(--amber);color:#0a0d12;border:none;cursor:pointer;font-weight:700;}
+    button:hover{opacity:0.9;}
+    button.delete{background:var(--red);}
+    .status{margin-top:12px;color:var(--green);min-height:20px;}
+    .hint{color:var(--muted);font-size:13px;margin-top:8px;line-height:1.7;}
+    .section{border-top:1px solid var(--border);padding-top:20px;margin-top:20px;}
+    .cert-list{margin-top:12px;}
+    .cert-item{background:rgba(255,255,255,0.03);border:1px solid var(--border);padding:12px;border-radius:6px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+    .cert-info{flex:1;}
+    .cert-actions{display:flex;gap:8px;}
+    .cert-actions button{width:auto;padding:8px 12px;font-size:12px;}
+    @media (max-width:700px){.grid{grid-template-columns:1fr;} .cert-item{flex-direction:column;align-items:flex-start;} .cert-actions{width:100%;}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+        <h1>Private content manager</h1>
+        <a href="index.html#top">← Back to home</a>
+      </div>
+      <p class="hint">Manage your portfolio content: certificates, experience, projects, skills, hero text, and contact details.</p>
+      <h2 style="font-size:18px;margin-bottom:12px;">Add new certificate</h2>
+      <div class="card">
+        <form id="private-cert-form" class="grid">
+          <input type="text" id="cert-title" placeholder="Certificate title" required>
+          <input type="text" id="cert-org" placeholder="Organization" required>
+          <input type="url" id="cert-link" placeholder="Link (optional)">
+          <input type="url" id="cert-image-url" placeholder="Image URL (optional)">
+          <input class="full" type="file" id="cert-file" accept="image/*,.pdf">
+          <textarea class="full" id="cert-notes" placeholder="Notes (optional)"></textarea>
+          <button class="full" type="submit">Save certificate</button>
+        </form>
+        <div id="add-status" class="status"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 style="font-size:18px;margin-bottom:12px;">Manage existing certificates</h2>
+      <div id="cert-list" class="cert-list"></div>
+    </div>
+
+    <div class="section">
+      <h2 style="font-size:18px;margin-bottom:12px;">Manage hero / landing content</h2>
+      <div class="card">
+        <form id="hero-form" class="grid">
+          <input type="text" id="hero-name-field" placeholder="First name (e.g. Famous)" required>
+          <input type="text" id="hero-accent-field" placeholder="Accent name (e.g. Dhungana)" required>
+          <input type="text" id="hero-role-field" placeholder="Role text (e.g. cybersecurity · linux)" required>
+          <input type="text" id="hero-tagline-field" placeholder="Tagline text" required>
+          <input class="full" type="text" id="hero-resume-field" placeholder="Resume file or link" required>
+          <button class="full" type="submit">Save hero content</button>
+          <button type="button" id="cancel-hero" class="delete">Cancel</button>
+        </form>
+        <div id="hero-status" class="status"></div>
+      </div>
+      <div id="hero-list" class="cert-list"></div>
+    </div>
+
+    <div class="section">
+      <h2 style="font-size:18px;margin-bottom:12px;">Manage contact section</h2>
+      <div class="card">
+        <form id="contact-form" class="grid">
+          <input type="text" id="contact-heading-field" placeholder="Contact heading" required>
+          <input class="full" type="text" id="contact-desc-field" placeholder="Contact description" required>
+          <input class="full" type="email" id="contact-email-field" placeholder="Email address" required>
+          <input class="full" type="tel" id="contact-phone-field" placeholder="Phone number" required>
+          <button class="full" type="submit">Save contact content</button>
+          <button type="button" id="cancel-contact" class="delete">Cancel</button>
+        </form>
+        <div id="contact-status" class="status"></div>
+      </div>
+      <div id="contact-list" class="cert-list"></div>
+    </div>
+
+    <div class="section">
+      <h2 style="font-size:18px;margin-bottom:12px;">Manage experience</h2>
+      <div class="card">
+        <form id="experience-form" class="grid">
+          <input type="text" id="exp-role" placeholder="Role / Title" required>
+          <input type="text" id="exp-org" placeholder="Organization" required>
+          <input type="text" id="exp-date" placeholder="Date or period (e.g. Mar 2026 — Jun 2026)" required>
+          <input type="text" id="exp-location" placeholder="Location (optional)">
+          <textarea class="full" id="exp-details" placeholder="Details, one bullet per line" required></textarea>
+          <button class="full" type="submit">Save experience</button>
+          <button type="button" id="cancel-exp" class="delete">Cancel edit</button>
+        </form>
+        <div id="exp-status" class="status"></div>
+      </div>
+      <div id="experience-list" class="cert-list"></div>
+    </div>
+
+    <div class="section">
+      <h2 style="font-size:18px;margin-bottom:12px;">Manage projects</h2>
+      <div class="card">
+        <form id="project-form" class="grid">
+          <input type="text" id="proj-path" placeholder="Project path (e.g. ~/projects/ecolog)" required>
+          <input type="text" id="proj-title" placeholder="Project title" required>
+          <input type="text" id="proj-badge" placeholder="Badge / highlight (optional)">
+          <input type="url" id="proj-link" placeholder="Project link (optional)">
+          <textarea class="full" id="proj-description" placeholder="Short description" required></textarea>
+          <textarea class="full" id="proj-detail" placeholder="Detailed outcome / problem statement" required></textarea>
+          <input class="full" type="text" id="proj-chips" placeholder="Tech chips/comma-separated tags (e.g. React, Node.js)">
+          <button class="full" type="submit">Save project</button>
+          <button type="button" id="cancel-proj" class="delete">Cancel edit</button>
+        </form>
+        <div id="proj-status" class="status"></div>
+      </div>
+      <div id="project-list" class="cert-list"></div>
+    </div>
+
+    <div class="section">
+      <h2 style="font-size:18px;margin-bottom:12px;">Manage skills</h2>
+      <div class="card">
+        <form id="skills-form" class="grid">
+          <input type="text" id="skills-tools" placeholder="Tools (comma-separated)" required>
+          <input type="text" id="skills-languages" placeholder="Programming languages (comma-separated)" required>
+          <input type="text" id="skills-spoken" placeholder="Spoken languages (comma-separated)" required>
+          <button class="full" type="submit">Save skills</button>
+          <button type="button" id="cancel-skill" class="delete">Cancel edit</button>
+        </form>
+        <div id="skill-status" class="status"></div>
+      </div>
+      <div id="skills-list" class="cert-list"></div>
+    </div>
+  </div>
+  <script>
+    const STORAGE_KEY = 'portfolio-private-certs';
+    const baseCertificates = [
+      { name: 'Introduction to Cybersecurity', org: 'Cisco' },
+      { name: 'Information Security Awareness, NSE 1', org: 'Fortinet' },
+      { name: 'Certified Network Security Practitioner (CNSP)', org: 'The SecOps Group' },
+      { name: 'CompTIA Security+', org: 'Udemy' },
+      { name: 'Active Directory Basics', org: 'Udemy' },
+      { name: 'APISec Certified Practitioner (ACP)', org: 'APISec University' },
+      { name: 'Cyber Security 101 / Pre Security', org: 'TryHackMe' },
+      { name: 'Governance, Risk & Compliance (GRC)', org: 'SecurityPal' },
+      { name: 'Cyber Ready Nepal Program', org: 'Eminence Ways Pvt. Ltd' }
+    ];
+
+    const DATA_KEY = 'portfolio-private-data';
+    let privateData = loadPrivateData();
+    let editingItem = null;
+    let currentSection = null;
+
+    const baseExperience = [
+      {
+        date: 'Mar 2026 — Jun 2026',
+        role: 'Cybersecurity Intern',
+        org: 'Eminence Ways Pvt. Ltd',
+        location: 'Remote · Kathmandu',
+        details: [
+          'Completed practical training covering web security, network security, cloud security, and security auditing',
+          'Performed vulnerability assessments and studied information security fundamentals',
+          'Participated in guided labs, strengthening understanding of cybersecurity threats and defensive practices'
+        ]
+      },
+      {
+        date: '2025',
+        role: 'General Manager, Leadership',
+        org: 'MBM IdeaX 2025',
+        details: ['Led the organizing team and coordinated participants, logistics, and operations for a nationwide hackathon in Nepal']
+      }
+    ];
+
+    const baseProjects = [
+      {
+        path: '~/projects/ecolog',
+        title: 'Ecolog',
+        badge: '🏆 Hackathon Project · Showcase Winner',
+        description: 'An environmental monitoring system built on Raspberry Pi that listens for forest fires and gunshots, pairing hardware integration with a real-time alert pipeline.',
+        chips: ['Raspberry Pi','Hardware','Real-time alerts'],
+        detail: 'My focus: hardware integration — wiring up the Pi\'s sensors and getting fire/gunshot signals to trigger alerts reliably in real time, rather than the software layer alone.<br><br>Outcome: the project was recognized as the winning entry at the Project Showcase competition for its innovation and how well the team worked together under time pressure.',
+        link: 'https://github.com/prasiddha98/Project-Ecolog'
+      },
+      {
+        path: '~/projects/lab-link',
+        title: 'Lab-Link',
+        badge: '⚡ TechSprint: Hack The Throne',
+        description: 'An academic management platform with QR-code record access and role-based portals, modernizing the academic evaluation workflow end to end.',
+        chips: ['React','Vite','Tailwind CSS','Node.js'],
+        detail: 'The problem: academic record-keeping and evaluation were scattered across paper and disconnected tools.<br><br>The fix: QR codes give instant access to a student\'s record, while role-based portals mean students, teachers, and admins each see exactly what they need — nothing more.',
+        link: 'https://github.com/prasiddha98/TechSprint_HackTheThrone'
+      },
+      {
+        path: '~/projects/gharkhoj',
+        title: 'GharKhoj',
+        description: 'A rental recommendation system that helps people find rooms and rental homes that actually match what they\'re looking for, matching listings to a renter\'s preferences and location instead of leaving them to scroll endlessly.',
+        chips: ['Recommendation Engine','Python','Web App'],
+        detail: 'The problem: rental hunting in most listing apps means scrolling through everything, with no sense of what actually fits you.<br><br>The fix: a recommendation layer that ranks listings against a renter\'s preferences and location, so the first results are the most relevant ones — not just the newest ones.',
+        link: 'https://github.com/prasiddha98/Ghar_Khoj/tree/master'
+      },
+      {
+        path: '~/projects/student-leave-management',
+        title: 'Student Leave Management System',
+        description: 'A web-based system for students and staff to submit, track, and approve leave requests — replacing the manual, paper-based approval process with a single online workflow.',
+        chips: ['Web App','CRUD','Approval Workflow'],
+        detail: 'The problem: leave requests moving through paper forms and in-person sign-offs are slow and easy to lose track of.<br><br>The fix: a shared system where students submit requests, staff review and approve or reject them, and everyone can see status at a glance.',
+        link: 'https://github.com/prasiddha98/Student-Leave-Management-System'
+      },
+      {
+        path: '~/projects/greet_terminal',
+        title: 'Greet Terminal',
+        description: 'A custom terminal greeter that runs on shell startup — the same kind of idea powering the terminal on this very page, showing personalized info the moment a session opens.',
+        chips: ['Shell Scripting','CLI','Linux'],
+        detail: 'The problem: a stock terminal gives you nothing but a blank prompt when you log in.<br><br>The fix: a lightweight greeter script that surfaces useful info right when a shell session starts, instead of a blank prompt.',
+        link: 'https://github.com/prasiddha98/greet_terminal'
+      }
+    ];
+
+    const baseSkills = {
+      tools: ['Linux','Git','GitHub','VirtualBox','Burp Suite','Nmap','Django','WordPress'],
+      languages_programming: ['Python','C++','C','JavaScript','PHP','SQL'],
+      languages_spoken: ['Nepali','English','Hindi']
+    };
+
+    function loadPrivate(){
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
+    }
+    function savePrivate(list){ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+
+    function loadPrivateData(){
+      try { return JSON.parse(localStorage.getItem(DATA_KEY) || '{}'); } catch { return {}; }
+    }
+    function savePrivateData(data){
+      localStorage.setItem(DATA_KEY, JSON.stringify(data));
+      privateData = data;
+    }
+
+    function setStatus(message, isError = false, section = 'add'){
+      const id = section === 'experience' ? 'exp-status'
+        : section === 'projects' ? 'proj-status'
+        : section === 'skills' ? 'skill-status'
+        : section === 'hero' ? 'hero-status'
+        : section === 'contact' ? 'contact-status'
+        : 'add-status';
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = message;
+      el.style.color = isError ? '#ff6b6b' : '#8bd17c';
+      setTimeout(() => { el.textContent = ''; }, 3000);
+    }
+
+    function readFileAsDataUrl(file){
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function getCombinedCertificates(){
+      const privateList = loadPrivate();
+      const deletedKeys = new Set(privateList.filter(item => item.deleted).map(item => `${item.name}|${item.org}`));
+      const combined = baseCertificates.reduce((acc, base) => {
+        const key = `${base.name}|${base.org}`;
+        if (deletedKeys.has(key)) return acc;
+        const overrideIndex = privateList.findIndex(item => !item.deleted && item.name === base.name && item.org === base.org);
+        if (overrideIndex >= 0) {
+          acc.push({ ...privateList[overrideIndex], _privateIndex: overrideIndex, _isOverride: true });
+        } else {
+          acc.push({ ...base, _isBase: true });
+        }
+        return acc;
+      }, []);
+      privateList.forEach((item, idx) => {
+        if (item.deleted) return;
+        const existsInBase = baseCertificates.some(base => base.name === item.name && base.org === item.org);
+        if (!existsInBase) {
+          combined.push({ ...item, _privateIndex: idx, _isPrivate: true });
+        }
+      });
+      return combined;
+    }
+
+    function renderList(){
+      const list = getCombinedCertificates();
+      const container = document.getElementById('cert-list');
+      if (!container) return;
+
+      if (list.length === 0) {
+        container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px;">No certificates available.</p>';
+        return;
+      }
+
+      container.innerHTML = list.map((cert, idx) => {
+        const note = cert._isBase ? '<span style="color:var(--muted);font-size:11px;">base certificate</span>' : cert._isOverride ? '<span style="color:var(--amber);font-size:11px;">overridden base certificate</span>' : '<span style="color:var(--green);font-size:11px;">private certificate</span>';
+        return `
+          <div class="cert-item">
+            <div class="cert-info">
+              <strong>${cert.name}</strong><br>
+              <span style="color:var(--muted);font-size:12px;">${cert.org}</span><br>
+              ${note}
+            </div>
+            <div class="cert-actions">
+              <button type="button" onclick="editCert(${idx})">Edit</button>
+              <button type="button" class="delete" onclick="deleteCert(${idx})">Delete</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function getExperienceSource(){
+      return Array.isArray(privateData.experience) && privateData.experience.length ? privateData.experience : baseExperience;
+    }
+
+    function getProjectSource(){
+      return Array.isArray(privateData.projects) && privateData.projects.length ? privateData.projects : baseProjects;
+    }
+
+    function getSkillsSource(){
+      const skills = privateData.skills || {};
+      const tools = Array.isArray(skills.tools) ? skills.tools : [];
+      const languages = Array.isArray(skills.languages_programming) ? skills.languages_programming : Array.isArray(skills.languages) ? skills.languages : [];
+      const spoken = Array.isArray(skills.languages_spoken) ? skills.languages_spoken : Array.isArray(skills.spoken) ? skills.spoken : [];
+      if (tools.length || languages.length || spoken.length) {
+        return { tools, languages_programming: languages, languages_spoken: spoken };
+      }
+      return baseSkills;
+    }
+
+    function getHeroSource(){
+      const hero = privateData.hero;
+      if (hero && typeof hero === 'object') {
+        return {
+          name: hero.name || 'Famous',
+          accent: hero.accent || 'Dhungana',
+          role: hero.role || 'cybersecurity · linux',
+          tagline: hero.tagline || 'I break things to understand them, then build things that don\'t break. Hunting vulnerabilities by day and building practical projects by night.',
+          resume: hero.resume || 'Famous_Dhungana_Resume.pdf'
+        };
+      }
+      return {
+        name: 'Famous',
+        accent: 'Dhungana',
+        role: 'cybersecurity · linux',
+        tagline: 'I break things to understand them, then build things that don\'t break. Hunting vulnerabilities by day and building practical projects by night.',
+        resume: 'Famous_Dhungana_Resume.pdf'
+      };
+    }
+
+    function getContactSource(){
+      const contact = privateData.contact;
+      if (contact && typeof contact === 'object') {
+        return {
+          heading: contact.heading || 'Looking to hire? Let\'s talk.',
+          desc: contact.desc || 'Based in New Thimi, Bhaktapur — I reply fast.',
+          email: contact.email || 'famousdhungana98@gmail.com',
+          phone: contact.phone || '9862054480'
+        };
+      }
+      return {
+        heading: 'Looking to hire? Let\'s talk.',
+        desc: 'Based in New Thimi, Bhaktapur — I reply fast.',
+        email: 'famousdhungana98@gmail.com',
+        phone: '9862054480'
+      };
+    }
+
+    function renderHeroSection(){
+      const container = document.getElementById('hero-list');
+      if (!container) return;
+      const hero = getHeroSource();
+      container.innerHTML = `
+        <div class="cert-item">
+          <div class="cert-info">
+            <strong>Hero content</strong><br>
+            <span style="color:var(--muted);font-size:12px;">${hero.name} <span style="color:var(--amber);">${hero.accent}</span> · ${hero.role}</span>
+            <p style="color:var(--muted);margin:10px 0 0;">${hero.tagline}</p>
+            <p style="color:var(--muted);margin-top:8px;font-size:12px;">Resume: ${hero.resume}</p>
+          </div>
+          <div class="cert-actions">
+            <button type="button" onclick="editSectionItem('hero', 0)">Edit</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderContactSection(){
+      const container = document.getElementById('contact-list');
+      if (!container) return;
+      const contact = getContactSource();
+      container.innerHTML = `
+        <div class="cert-item">
+          <div class="cert-info">
+            <strong>Contact section</strong><br>
+            <span style="color:var(--muted);font-size:12px;">${contact.heading}</span>
+            <p style="color:var(--muted);margin:10px 0 0;">${contact.desc}</p>
+            <p style="color:var(--muted);margin-top:8px;font-size:12px;">✉ ${contact.email} · ☎ ${contact.phone}</p>
+          </div>
+          <div class="cert-actions">
+            <button type="button" onclick="editSectionItem('contact', 0)">Edit</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderExperienceSection(){
+      const container = document.getElementById('experience-list');
+      if (!container) return;
+      const experience = getExperienceSource();
+      if (!experience.length) {
+        container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px;">No experience items saved yet.</p>';
+        return;
+      }
+      container.innerHTML = experience.map((item, idx) => `
+        <div class="cert-item">
+          <div class="cert-info">
+            <strong>${item.role}</strong><br>
+            <span style="color:var(--muted);font-size:12px;">${item.org}</span><br>
+            <span style="color:var(--muted);font-size:11px;">${item.date}${item.location ? ' · ' + item.location : ''}</span>
+            <ul style="margin-top:10px;padding-left:18px;color:var(--muted);line-height:1.6;">${item.details.map(detail => `<li>${detail}</li>`).join('')}</ul>
+          </div>
+          <div class="cert-actions">
+            <button type="button" onclick="editSectionItem('experience', ${idx})">Edit</button>
+            <button type="button" class="delete" onclick="deleteSectionItem('experience', ${idx})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderProjectSection(){
+      const container = document.getElementById('project-list');
+      if (!container) return;
+      const projects = getProjectSource();
+      if (!projects.length) {
+        container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px;">No project entries saved yet.</p>';
+        return;
+      }
+      container.innerHTML = projects.map((proj, idx) => `
+        <div class="cert-item">
+          <div class="cert-info">
+            <strong>${proj.title}</strong><br>
+            <span style="color:var(--muted);font-size:12px;">${proj.path}</span><br>
+            ${proj.badge ? `<span style="color:var(--amber);font-size:11px;display:block;margin-top:6px;">${proj.badge}</span>` : ''}
+            <p style="color:var(--muted);margin:10px 0 0;">${proj.description}</p>
+            <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;">${proj.chips.map(chip => `<span style="font-size:11px;color:var(--cyan);background:rgba(110,231,224,0.08);border:1px solid rgba(110,231,224,0.18);padding:4px 8px;border-radius:999px;">${chip}</span>`).join('')}</div>
+            <p style="color:var(--muted);margin-top:10px;">${proj.link ? `<a href="${proj.link}" target="_blank" rel="noopener" style="color:var(--cyan);">View link</a>` : ''}</p>
+          </div>
+          <div class="cert-actions">
+            <button type="button" onclick="editSectionItem('projects', ${idx})">Edit</button>
+            <button type="button" class="delete" onclick="deleteSectionItem('projects', ${idx})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderSkillsSection(){
+      const container = document.getElementById('skills-list');
+      if (!container) return;
+      const skills = getSkillsSource();
+      if (!skills.tools.length && !skills.languages_programming.length && !skills.languages_spoken.length) {
+        container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px;">No skills saved yet.</p>';
+        return;
+      }
+      container.innerHTML = `
+        <div class="cert-item">
+          <div class="cert-info">
+            <strong>Skills</strong><br>
+            ${skills.tools.length ? `<div style="color:var(--muted);font-size:12px;margin-top:6px;">Tools: ${skills.tools.join(', ')}</div>` : ''}
+            ${skills.languages_programming.length ? `<div style="color:var(--muted);font-size:12px;margin-top:4px;">Programming: ${skills.languages_programming.join(', ')}</div>` : ''}
+            ${skills.languages_spoken.length ? `<div style="color:var(--muted);font-size:12px;margin-top:4px;">Spoken: ${skills.languages_spoken.join(', ')}</div>` : ''}
+          </div>
+          <div class="cert-actions">
+            <button type="button" onclick="editSectionItem('skills', 0)">Edit</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function refreshPortfolioSections(){
+      renderList();
+      renderHeroSection();
+      renderContactSection();
+      renderExperienceSection();
+      renderProjectSection();
+      renderSkillsSection();
+    }
+
+    function editSectionItem(section, idx){
+      currentSection = section;
+      if (section === 'experience') {
+        const item = getExperienceSource()[idx];
+        if (!item) return;
+        document.getElementById('exp-role').value = item.role;
+        document.getElementById('exp-org').value = item.org;
+        document.getElementById('exp-date').value = item.date;
+        document.getElementById('exp-location').value = item.location || '';
+        document.getElementById('exp-details').value = item.details.join('\n');
+        document.querySelector('#experience-form button[type="submit"]').textContent = 'Update experience';
+      } else if (section === 'projects') {
+        const item = getProjectSource()[idx];
+        if (!item) return;
+        document.getElementById('proj-path').value = item.path;
+        document.getElementById('proj-title').value = item.title;
+        document.getElementById('proj-badge').value = item.badge || '';
+        document.getElementById('proj-link').value = item.link || '';
+        document.getElementById('proj-description').value = item.description;
+        document.getElementById('proj-detail').value = item.detail;
+        document.getElementById('proj-chips').value = item.chips.join(', ');
+        document.querySelector('#project-form button[type="submit"]').textContent = 'Update project';
+      } else if (section === 'skills') {
+        const item = getSkillsSource();
+        document.getElementById('skills-tools').value = (item.tools || []).join(', ');
+        document.getElementById('skills-languages').value = (item.languages_programming || []).join(', ');
+        document.getElementById('skills-spoken').value = (item.languages_spoken || []).join(', ');
+        document.querySelector('#skills-form button[type="submit"]').textContent = 'Update skills';
+      } else if (section === 'hero') {
+        const item = getHeroSource();
+        document.getElementById('hero-name-field').value = item.name;
+        document.getElementById('hero-accent-field').value = item.accent;
+        document.getElementById('hero-role-field').value = item.role;
+        document.getElementById('hero-tagline-field').value = item.tagline;
+        document.getElementById('hero-resume-field').value = item.resume;
+        document.querySelector('#hero-form button[type="submit"]').textContent = 'Update hero content';
+      } else if (section === 'contact') {
+        const item = getContactSource();
+        document.getElementById('contact-heading-field').value = item.heading;
+        document.getElementById('contact-desc-field').value = item.desc;
+        document.getElementById('contact-email-field').value = item.email;
+        document.getElementById('contact-phone-field').value = item.phone;
+        document.querySelector('#contact-form button[type="submit"]').textContent = 'Update contact content';
+      }
+      editingItem = idx;
+    }
+
+    function deleteSectionItem(section, idx){
+      if (!confirm('Delete this item?')) return;
+      const data = { ...privateData };
+      if (section === 'experience') {
+        const list = Array.isArray(data.experience) ? [...data.experience] : getExperienceSource().map(item => ({ ...item }));
+        list.splice(idx, 1);
+        data.experience = list;
+      } else if (section === 'projects') {
+        const list = Array.isArray(data.projects) ? [...data.projects] : getProjectSource().map(item => ({ ...item }));
+        list.splice(idx, 1);
+        data.projects = list;
+      }
+      savePrivateData(data);
+      refreshPortfolioSections();
+      setStatus('Deleted.', false, section);
+    }
+
+    function resetSectionForm(section){
+      currentSection = null;
+      editingItem = null;
+      if (section === 'experience') {
+        document.getElementById('experience-form').reset();
+        document.querySelector('#experience-form button[type="submit"]').textContent = 'Save experience';
+      } else if (section === 'projects') {
+        document.getElementById('project-form').reset();
+        document.querySelector('#project-form button[type="submit"]').textContent = 'Save project';
+      } else if (section === 'skills') {
+        document.getElementById('skills-form').reset();
+        document.querySelector('#skills-form button[type="submit"]').textContent = 'Save skills';
+      } else if (section === 'hero') {
+        document.getElementById('hero-form').reset();
+        document.querySelector('#hero-form button[type="submit"]').textContent = 'Save hero content';
+      } else if (section === 'contact') {
+        document.getElementById('contact-form').reset();
+        document.querySelector('#contact-form button[type="submit"]').textContent = 'Save contact content';
+      }
+    }
+
+    document.getElementById('cancel-exp').addEventListener('click', () => resetSectionForm('experience'));
+    document.getElementById('cancel-proj').addEventListener('click', () => resetSectionForm('projects'));
+    document.getElementById('cancel-skill').addEventListener('click', () => resetSectionForm('skills'));
+    document.getElementById('cancel-hero').addEventListener('click', () => resetSectionForm('hero'));
+    document.getElementById('cancel-contact').addEventListener('click', () => resetSectionForm('contact'));
+
+    document.getElementById('experience-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const role = document.getElementById('exp-role').value.trim();
+      const org = document.getElementById('exp-org').value.trim();
+      const date = document.getElementById('exp-date').value.trim();
+      const location = document.getElementById('exp-location').value.trim();
+      const details = document.getElementById('exp-details').value.split('\n').map(line => line.trim()).filter(Boolean);
+      if (!role || !org || !date || !details.length) { setStatus('Please complete all experience fields.', true, 'experience'); return; }
+      const experience = Array.isArray(privateData.experience) ? [...privateData.experience] : getExperienceSource().map(item => ({ ...item }));
+      const item = { role, org, date, location, details };
+      if (currentSection === 'experience' && typeof editingItem === 'number') {
+        experience[editingItem] = item;
+        setStatus('Experience updated.', false, 'experience');
+      } else {
+        experience.push(item);
+        setStatus('Experience saved.', false, 'experience');
+      }
+      savePrivateData({ ...privateData, experience });
+      refreshPortfolioSections();
+      resetSectionForm('experience');
+    });
+
+    document.getElementById('project-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const path = document.getElementById('proj-path').value.trim();
+      const title = document.getElementById('proj-title').value.trim();
+      const badge = document.getElementById('proj-badge').value.trim();
+      const link = document.getElementById('proj-link').value.trim();
+      const description = document.getElementById('proj-description').value.trim();
+      const detail = document.getElementById('proj-detail').value.trim();
+      const chips = document.getElementById('proj-chips').value.split(',').map(c => c.trim()).filter(Boolean);
+      if (!path || !title || !description || !detail) { setStatus('Please complete all required project fields.', true, 'projects'); return; }
+      const projects = Array.isArray(privateData.projects) ? [...privateData.projects] : getProjectSource().map(item => ({ ...item }));
+      const item = { path, title, badge, link, description, detail, chips };
+      if (currentSection === 'projects' && typeof editingItem === 'number') {
+        projects[editingItem] = item;
+        setStatus('Project updated.', false, 'projects');
+      } else {
+        projects.push(item);
+        setStatus('Project saved.', false, 'projects');
+      }
+      savePrivateData({ ...privateData, projects });
+      refreshPortfolioSections();
+      resetSectionForm('projects');
+    });
+
+    document.getElementById('hero-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('hero-name-field').value.trim();
+      const accent = document.getElementById('hero-accent-field').value.trim();
+      const role = document.getElementById('hero-role-field').value.trim();
+      const tagline = document.getElementById('hero-tagline-field').value.trim();
+      const resume = document.getElementById('hero-resume-field').value.trim();
+      if (!name || !accent || !role || !tagline || !resume) { setStatus('Please complete all hero fields.', true, 'hero'); return; }
+      savePrivateData({ ...privateData, hero: { name, accent, role, tagline, resume } });
+      refreshPortfolioSections();
+      resetSectionForm('hero');
+      setStatus('Hero content saved.', false, 'hero');
+    });
+
+    document.getElementById('contact-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const heading = document.getElementById('contact-heading-field').value.trim();
+      const desc = document.getElementById('contact-desc-field').value.trim();
+      const email = document.getElementById('contact-email-field').value.trim();
+      const phone = document.getElementById('contact-phone-field').value.trim();
+      if (!heading || !desc || !email || !phone) { setStatus('Please complete all contact fields.', true, 'contact'); return; }
+      savePrivateData({ ...privateData, contact: { heading, desc, email, phone } });
+      refreshPortfolioSections();
+      resetSectionForm('contact');
+      setStatus('Contact content saved.', false, 'contact');
+    });
+
+    document.getElementById('skills-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const tools = document.getElementById('skills-tools').value.split(',').map(t => t.trim()).filter(Boolean);
+      const languages = document.getElementById('skills-languages').value.split(',').map(t => t.trim()).filter(Boolean);
+      const spoken = document.getElementById('skills-spoken').value.split(',').map(t => t.trim()).filter(Boolean);
+      if (!tools.length || !languages.length || !spoken.length) { setStatus('Please fill all skills fields.', true, 'skills'); return; }
+      const skills = { tools, languages_programming: languages, languages_spoken: spoken };
+      savePrivateData({ ...privateData, skills });
+      refreshPortfolioSections();
+      resetSectionForm('skills');
+      setStatus('Skills saved.', false, 'skills');
+    });
+
+    function editCert(idx){
+      const item = getCombinedCertificates()[idx];
+      if (!item) return;
+      document.getElementById('cert-title').value = item.name;
+      document.getElementById('cert-org').value = item.org;
+      document.getElementById('cert-link').value = item.link || '';
+      document.getElementById('cert-image-url').value = item.image || '';
+      document.getElementById('cert-notes').value = item.notes || '';
+      editingItem = item;
+      document.querySelector('#private-cert-form button[type="submit"]').textContent = item._isBase ? 'Create override' : 'Update certificate';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Initial render
+    renderList();
+    refreshPortfolioSections();
+
+    function deleteCert(idx){
+      const item = getCombinedCertificates()[idx];
+      if (!item) return;
+      if (!confirm('Delete this certificate?')) return;
+      const list = loadPrivate();
+
+      if (item._isBase) {
+        const deletedMarker = { name: item.name, org: item.org, deleted: true };
+        list.push(deletedMarker);
+        savePrivate(list);
+        renderList();
+        setStatus('Base certificate hidden.');
+        return;
+      }
+
+      if (typeof item._privateIndex === 'number') {
+        list.splice(item._privateIndex, 1);
+        savePrivate(list);
+        renderList();
+        setStatus('Certificate deleted.');
+      }
+    }
+
+    function cancelEdit(){
+      editingItem = null;
+      document.getElementById('private-cert-form').reset();
+      document.querySelector('button[type="submit"]').textContent = 'Save certificate';
+    }
+
+    document.getElementById('private-cert-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('cert-title').value.trim();
+      const org = document.getElementById('cert-org').value.trim();
+      const link = document.getElementById('cert-link').value.trim();
+      const imageUrl = document.getElementById('cert-image-url').value.trim();
+      const fileInput = document.getElementById('cert-file');
+      const notes = document.getElementById('cert-notes').value.trim();
+
+      if (!title || !org) { setStatus('Please add a title and organization.', true); return; }
+
+      let image = '';
+      if (fileInput.files && fileInput.files[0]) {
+        try { image = await readFileAsDataUrl(fileInput.files[0]); }
+        catch { setStatus('Could not read the uploaded file.', true); return; }
+      } else if (imageUrl) {
+        image = imageUrl;
+      }
+
+      const list = loadPrivate();
+      const newCert = { name: title, org, link, image, notes };
+
+      if (editingItem) {
+        if (typeof editingItem._privateIndex === 'number') {
+          list[editingItem._privateIndex] = newCert;
+        } else {
+          const existingIndex = list.findIndex(item => item.name === editingItem.name && item.org === editingItem.org);
+          if (existingIndex >= 0) {
+            list[existingIndex] = newCert;
+          } else {
+            list.push(newCert);
+          }
+        }
+        setStatus('Certificate updated.');
+        cancelEdit();
+      } else {
+        list.push(newCert);
+        setStatus('Certificate saved successfully.');
+      }
+
+      savePrivate(list);
+      renderList();
+      e.target.reset();
+    });
+
+    // Initial render
+    renderList();
+  </script>
+</body>
+</html>

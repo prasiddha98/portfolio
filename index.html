@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Famous Dhungana — root@portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="fambug.jpg" type="image/jpeg">
+<style>
+  :root{
+    --void:#0a0d12;
+    --panel:#10151c;
+    --panel-raised:#151b24;
+    --border:#232b36;
+    --border-soft:#1a212b;
+    --text:#dfe6ee;
+    --muted:#7c8a9a;
+    --dim:#4d5a68;
+    --amber:#ffb454;
+    --amber-dim:#8a6636;
+    --cyan:#6ee7e0;
+    --green:#8bd17c;
+    --red:#ff6b6b;
+    --mono: 'JetBrains Mono', monospace;
+    --disp: 'Space Grotesk', sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--void);
+    color:var(--text);
+    font-family:var(--disp);
+    line-height:1.5;
+    overflow-x:hidden;
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(255,180,84,0.05), transparent 40%),
+      radial-gradient(circle at 85% 20%, rgba(110,231,224,0.04), transparent 45%);
+  }
+  ::selection{background:var(--amber);color:#0a0d12;}
+  a{color:inherit;text-decoration:none;}
+  .mono{font-family:var(--mono);}
+
+  /* subtle scanline texture, applied only to terminal-ish panels */
+  .scanlines{
+    position:relative;
+  }
+  .scanlines::before{
+    content:"";
+    position:absolute;inset:0;
+    pointer-events:none;
+    background:repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.018) 0px,
+      rgba(255,255,255,0.018) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    mix-blend-mode:overlay;
+  }
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 32px;
+    background:rgba(10,13,18,0.75);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border-soft);
+  }
+  .logo{
+    font-family:var(--mono);font-weight:700;font-size:15px;color:var(--amber);
+    letter-spacing:0.5px;
+  }
+  .logo span{color:var(--dim);}
+  .navlinks{display:flex;gap:28px;font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .navlinks a{position:relative;transition:color .2s;}
+  .navlinks a:hover{color:var(--cyan);}
+  .navlinks a::before{content:"./";color:var(--dim);}
+  @media (max-width:720px){ .navlinks{display:none;} }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    min-height:100vh;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:120px 32px 80px;
+    max-width:1100px;margin:0 auto;
+  }
+  .hero-grid{
+    display:grid;grid-template-columns:1fr 340px;gap:40px;align-items:center;
+  }
+  .float-stack{
+    position:relative;height:420px;
+  }
+  .float-badge{
+    position:absolute;
+    display:inline-flex;align-items:center;gap:9px;
+    font-family:var(--mono);font-size:13px;color:var(--text);
+    background:rgba(21,27,36,0.75);
+    border:1px solid var(--border);
+    padding:10px 16px;border-radius:10px;
+    backdrop-filter:blur(6px);
+    box-shadow:0 12px 30px -12px rgba(0,0,0,0.5);
+    white-space:nowrap;
+  }
+  .fb-icon{font-size:15px;color:var(--amber);}
+  .fb1{top:4%;   left:8%;   animation:floatA 7s ease-in-out infinite;}
+  .fb2{top:20%;  left:48%;  animation:floatB 8s ease-in-out infinite; animation-delay:.4s;}
+  .fb3{top:2%;   left:60%;  animation:floatA 6.5s ease-in-out infinite; animation-delay:1.1s;}
+  .fb4{top:38%;  left:4%;   animation:floatB 7.5s ease-in-out infinite; animation-delay:.7s;}
+  .fb5{top:52%;  left:52%;  animation:floatA 8.5s ease-in-out infinite; animation-delay:.2s;}
+  .fb6{top:70%;  left:14%;  animation:floatB 7s ease-in-out infinite; animation-delay:1.4s;}
+  .fb7{top:80%;  left:56%;  animation:floatA 7.8s ease-in-out infinite; animation-delay:.9s;}
+  @keyframes floatA{
+    0%,100%{transform:translateY(0) rotate(0deg);}
+    50%{transform:translateY(-16px) rotate(-2deg);}
+  }
+  @keyframes floatB{
+    0%,100%{transform:translateY(0) rotate(0deg);}
+    50%{transform:translateY(14px) rotate(2deg);}
+  }
+  @media (max-width:900px){
+    .hero-grid{grid-template-columns:1fr;}
+    .float-stack{
+      height:auto;display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;
+    }
+    .float-badge{position:static;animation:none !important;}
+  }
+  .boot-log{
+    font-family:var(--mono);font-size:12.5px;color:var(--dim);
+    margin-bottom:28px;line-height:1.9;
+    min-height:130px;
+  }
+  .boot-log .ok{color:var(--green);}
+  .boot-log .tag{color:var(--muted);}
+  .cursor-blink{display:inline-block;width:7px;height:14px;background:var(--amber);
+    animation:blink 1s steps(1) infinite;vertical-align:middle;margin-left:2px;}
+  @keyframes blink{50%{opacity:0;}}
+
+  .hero h1{
+    font-size:clamp(42px,8vw,96px);
+    font-weight:700;
+    letter-spacing:-2px;
+    line-height:0.98;
+    color:var(--text);
+  }
+  .hero h1 .accent{color:var(--amber);}
+  .hero .role{
+    font-family:var(--mono);
+    font-size:clamp(13px,2vw,18px);
+    color:var(--cyan);
+    margin-top:18px;
+    letter-spacing:0.5px;
+  }
+  .hero .role .bracket{color:var(--dim);}
+  .hero p.tagline{
+    max-width:560px;margin-top:22px;color:var(--muted);font-size:16px;line-height:1.7;
+  }
+  .hero-actions{display:flex;gap:16px;margin-top:38px;flex-wrap:wrap;}
+  .btn{
+    font-family:var(--mono);font-size:13px;font-weight:600;
+    padding:14px 22px;border-radius:3px;border:1px solid var(--border);
+    display:inline-flex;align-items:center;gap:10px;
+    transition:transform .15s ease, border-color .15s ease, background .15s ease;
+    cursor:pointer;
+  }
+  .btn-primary{background:var(--amber);color:#0a0d12;border-color:var(--amber);}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,180,84,0.18);}
+  .btn-ghost{color:var(--text);}
+  .btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-2px);}
+  .btn small{color:inherit;opacity:0.65;font-weight:400;}
+
+  /* ---------- SECTION SHELL ---------- */
+  section.block{
+    max-width:1100px;margin:0 auto;padding:70px 32px;
+    border-bottom:1px solid var(--border-soft);
+  }
+  .tag-row{
+    display:flex;align-items:center;gap:14px;margin-bottom:34px;
+  }
+  .tag-num{
+    font-family:var(--mono);font-size:12px;color:var(--void);
+    background:var(--amber);padding:3px 9px;border-radius:2px;font-weight:700;
+  }
+  .tag-title{font-family:var(--mono);font-size:13px;letter-spacing:2.5px;color:var(--muted);text-transform:uppercase;}
+  .tag-line{flex:1;height:1px;background:var(--border);}
+
+  /* ---------- TERMINAL (signature) ---------- */
+  .term-wrap{
+    max-width:1100px;margin:0 auto;padding:0 32px 90px;
+  }
+  .term-hint{
+    font-family:var(--mono);font-size:12px;color:var(--dim);margin-bottom:14px;
+    text-align:center;
+  }
+  .terminal{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:8px;
+    overflow:hidden;
+    box-shadow:0 30px 80px -30px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.02);
+  }
+  .term-bar{
+    display:flex;align-items:center;gap:8px;
+    padding:11px 14px;background:var(--panel-raised);
+    border-bottom:1px solid var(--border);
+  }
+  .term-dot{width:11px;height:11px;border-radius:50%;}
+  .term-bar .term-title{
+    margin-left:10px;font-family:var(--mono);font-size:12px;color:var(--muted);
+  }
+  .term-body{
+    height:420px;overflow-y:auto;padding:20px 22px;
+    font-family:var(--mono);font-size:13.5px;color:var(--text);
+    cursor:text;
+  }
+  .term-body::-webkit-scrollbar{width:8px;}
+  .term-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+  .term-line{margin-bottom:6px;white-space:pre-wrap;word-break:break-word;}
+  .term-line .prompt{color:var(--green);}
+  .term-line .path{color:var(--cyan);}
+  .term-line .cmdtext{color:var(--text);}
+  .term-out{color:var(--muted);margin-bottom:10px;white-space:pre-wrap;}
+  .term-out .hi{color:var(--amber);}
+  .term-out .cy{color:var(--cyan);}
+  .term-out .gr{color:var(--green);}
+  .term-input-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .term-input-row .prompt{color:var(--green);white-space:nowrap;}
+  .term-input-row .path{color:var(--cyan);white-space:nowrap;}
+  .term-inline{margin-top:14px;padding-top:10px;border-top:1px dashed rgba(255,255,255,0.08);}
+  #term-input{
+    flex:1;background:transparent;border:none;outline:none;
+    color:var(--text);font-family:var(--mono);font-size:13.5px;
+    caret-color:var(--amber);
+  }
+
+  /* ---------- EXPERIENCE ---------- */
+  .exp-item{
+    display:grid;grid-template-columns:150px 1fr;gap:24px;
+    padding:26px 0;border-top:1px solid var(--border-soft);
+  }
+  .exp-item:first-child{border-top:none;}
+  .exp-date{font-family:var(--mono);font-size:12px;color:var(--dim);padding-top:3px;}
+  .exp-role{font-size:19px;font-weight:600;color:var(--text);}
+  .exp-org{font-family:var(--mono);font-size:13px;color:var(--amber);margin-top:2px;}
+  .exp-loc{font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:2px;}
+  .exp-list{margin-top:12px;list-style:none;}
+  .exp-list li{
+    font-size:14.5px;color:var(--muted);padding-left:20px;position:relative;margin-bottom:7px;
+  }
+  .exp-list li::before{content:"›";position:absolute;left:0;color:var(--cyan);}
+
+  /* ---------- PROJECTS ---------- */
+  .proj-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
+  @media (max-width:780px){.proj-grid{grid-template-columns:1fr;}}
+  .proj-card{
+    background:var(--panel);border:1px solid var(--border);border-radius:8px;
+    padding:26px;transition:border-color .2s, transform .2s;
+  }
+  .proj-card:hover{border-color:var(--amber-dim);transform:translateY(-3px);}
+  .proj-file{font-family:var(--mono);font-size:11px;color:var(--dim);margin-bottom:10px;}
+  .proj-card h3{font-size:21px;font-weight:600;margin-bottom:12px;}
+  .proj-card p{font-size:14px;color:var(--muted);margin-bottom:14px;}
+  .proj-badge{
+    display:inline-block;font-family:var(--mono);font-size:11px;color:var(--green);
+    border:1px solid rgba(139,209,124,0.3);background:rgba(139,209,124,0.06);
+    padding:4px 10px;border-radius:20px;margin-bottom:14px;
+  }
+  .stack-row{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{font-family:var(--mono);font-size:11px;color:var(--cyan);background:rgba(110,231,224,0.07);
+    border:1px solid rgba(110,231,224,0.18);padding:4px 9px;border-radius:4px;}
+
+  /* ---------- EDUCATION ---------- */
+  .edu-item{display:grid;grid-template-columns:150px 1fr;gap:24px;padding:22px 0;border-top:1px solid var(--border-soft);}
+  .edu-item:first-child{border-top:none;}
+  .edu-date{font-family:var(--mono);font-size:12px;color:var(--dim);}
+  .edu-item h3{font-size:18px;font-weight:600;}
+  .edu-item .deg{font-family:var(--mono);font-size:13px;color:var(--amber);margin-top:3px;}
+  .edu-item .loc{font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:3px;}
+
+  /* ---------- CERTS ---------- */
+  .cert-grid{display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:16px;}
+  @media (max-width:780px){.cert-grid{grid-template-columns:1fr;}}
+  .cert-card{
+    display:flex;flex-direction:column;gap:12px;
+    padding:16px;background:var(--panel);border:1px solid var(--border);border-radius:8px;
+    min-height:100%;
+  }
+  .cert-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+  .cert-card h4{font-size:16px;font-weight:600;color:var(--text);line-height:1.4;}
+  .cert-card .check{color:var(--green);font-weight:700;font-family:var(--mono);}
+  .cert-card .cert-org{font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:4px;}
+  .cert-actions{display:flex;flex-wrap:wrap;gap:8px;}
+  .cert-link-btn{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:7px 10px;border:1px solid rgba(110,231,224,0.2);border-radius:999px;
+    background:rgba(110,231,224,0.07);color:var(--cyan);font-family:var(--mono);font-size:11px;
+    transition:border-color .2s, transform .2s;
+  }
+  .cert-link-btn:hover{border-color:var(--cyan);transform:translateY(-1px);}
+  .cert-image{
+    width:100%;max-height:220px;object-fit:cover;border-radius:6px;border:1px solid var(--border);
+    display:none;cursor:pointer;transition:transform .2s;
+  }
+  .cert-image.shown{display:block;}
+  .cert-image:hover{transform:scale(1.02);}
+  .cert-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:1000;justify-content:center;align-items:center;padding:20px;}
+  .cert-modal.active{display:flex;}
+  .cert-modal-content{background:var(--panel);border:1px solid var(--border);border-radius:8px;max-width:600px;max-height:80vh;overflow-y:auto;padding:20px;}
+  .cert-modal-close{position:absolute;top:20px;right:30px;color:var(--muted);cursor:pointer;font-size:28px;font-weight:700;}
+  .cert-modal-close:hover{color:var(--text);}
+  .cert-note{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:6px;}
+
+  /* ---------- SKILLS ---------- */
+  .skills-json{
+    background:var(--panel);border:1px solid var(--border);border-radius:8px;
+    padding:28px 30px;font-family:var(--mono);font-size:13.5px;line-height:2.1;
+    overflow-x:auto;
+  }
+  .skills-json .k{color:var(--cyan);}
+  .skills-json .s{color:var(--green);}
+  .skills-json .p{color:var(--dim);}
+  .skills-json .b{color:var(--muted);}
+
+  /* ---------- ACHIEVEMENTS ---------- */
+  .ach-row{
+    display:flex;align-items:center;gap:18px;padding:18px 0;border-top:1px solid var(--border-soft);
+  }
+  .ach-row:first-child{border-top:none;}
+  .ach-trophy{font-family:var(--mono);color:var(--amber);font-size:13px;width:60px;flex-shrink:0;}
+  .ach-row h4{font-size:16px;font-weight:600;}
+  .ach-row span{font-family:var(--mono);font-size:12px;color:var(--dim);}
+
+  /* ---------- CONTACT / FOOTER ---------- */
+  footer{
+    max-width:1100px;margin:0 auto;padding:80px 32px 60px;text-align:center;
+  }
+  footer h2{font-size:clamp(30px,5vw,52px);font-weight:700;margin-bottom:18px;}
+  footer h2 .accent{color:var(--amber);}
+  footer p{color:var(--muted);margin-bottom:34px;font-size:15px;}
+  .contact-row{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:60px;}
+  .foot-bottom{font-family:var(--mono);font-size:11.5px;color:var(--dim);}
+
+  ::-webkit-scrollbar{width:10px;}
+  ::-webkit-scrollbar-track{background:var(--void);}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:5px;}
+
+  @media (max-width:600px){
+    .exp-item,.edu-item{grid-template-columns:1fr;gap:6px;}
+    .term-body{height:360px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+
+  a:focus-visible, button:focus-visible, input:focus-visible{
+    outline:2px solid var(--cyan); outline-offset:2px;
+  }
+  /* ---------- SCROLL REVEAL ---------- */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease, transform .7s ease;}
+  .reveal.visible{opacity:1;transform:translateY(0);}
+
+  /* ---------- PROJECT EXPAND ---------- */
+  .proj-toggle{
+    display:inline-flex;align-items:center;gap:6px;
+    font-family:var(--mono);font-size:12px;color:var(--amber);
+    cursor:pointer;background:none;border:none;padding:0;
+  }
+  .proj-toggle:hover{color:var(--cyan);}
+  .proj-toggle .chev{display:inline-block;transition:transform .25s ease;}
+  .proj-actions{
+    display:flex;align-items:center;justify-content:space-between;margin-top:16px;
+  }
+  .proj-code{
+    font-family:var(--mono);font-size:12px;color:var(--muted);
+    display:inline-flex;align-items:center;gap:6px;transition:color .2s;
+  }
+  .proj-code:hover{color:var(--cyan);}
+  .proj-detail{
+    max-height:0;overflow:hidden;opacity:0;
+    transition:max-height .4s ease, opacity .3s ease, margin-top .4s ease;
+  }
+  .proj-card.expanded .proj-detail{max-height:260px;opacity:1;margin-top:14px;}
+  .proj-card.expanded .proj-toggle{color:var(--text);}
+  .proj-card.expanded .proj-toggle:hover{color:var(--cyan);}
+  .proj-card.expanded .proj-detail-inner{
+    border-top:1px solid var(--border-soft);padding-top:14px;
+    font-size:13.5px;color:var(--text);line-height:1.7;
+  }
+  .proj-detail-inner .proj-detail-prefix{color:var(--cyan);font-weight:700;}
+  .proj-detail-inner strong{color:var(--cyan);}
+
+  /* ---------- HIRE BADGE ---------- */
+  .hire-badge{
+    display:inline-flex;align-items:center;gap:9px;
+    font-family:var(--mono);font-size:12px;color:var(--green);
+    border:1px solid rgba(139,209,124,0.3);background:rgba(139,209,124,0.06);
+    padding:7px 16px;border-radius:20px;margin-bottom:26px;
+  }
+  .hire-badge .dot{
+    width:8px;height:8px;border-radius:50%;background:var(--green);
+    box-shadow:0 0 0 0 rgba(139,209,124,0.5);
+    animation:pulse 2s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(139,209,124,0.5);}
+    70%{box-shadow:0 0 0 8px rgba(139,209,124,0);}
+    100%{box-shadow:0 0 0 0 rgba(139,209,124,0);}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="index.html#top">FD<span>_</span>portfolio</a>
+  <div class="navlinks">
+    <a href="#terminal">terminal</a>
+    <a href="#experience">experience</a>
+    <a href="#projects">projects</a>
+    <a href="#skills">skills</a>
+    <a href="#contact">contact</a>
+  </div>
+</nav>
+
+<section class="hero" id="top">
+  <div class="hero-grid">
+    <div class="hero-content">
+      <div class="boot-log mono" id="bootLog"></div>
+      <h1 id="hero-name">Famous<br><span class="accent" id="hero-accent">Dhungana</span></h1>
+      <div class="role" id="hero-role"><span class="bracket">[</span>cybersecurity <span class="bracket">·</span> linux<span class="bracket">]</span></div>
+      <p class="tagline" id="hero-tagline">I break things to understand them, then build things that don't break. Hunting vulnerabilities by day and building practical projects by night.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" id="hero-resume" href="Famous_Dhungana_Resume_.pdf" download="Famous_Dhungana_Resume.pdf">⬇ Download CV</a>
+      </div>
+    </div>
+    <div class="float-stack" aria-hidden="true">
+      <div class="float-badge fb1"><span class="fb-icon">🐧</span> Linux</div>
+      <div class="float-badge fb2"><span class="fb-icon">🐍</span> Python</div>
+      <div class="float-badge fb3"><span class="fb-icon">🛡️</span> Burp Suite</div>
+      <div class="float-badge fb4"><span class="fb-icon">📡</span> Nmap</div>
+      <div class="float-badge fb5"><span class="fb-icon">{ }</span> JavaScript</div>
+      <div class="float-badge fb6"><span class="fb-icon">⌥</span> Git</div>
+      <div class="float-badge fb7"><span class="fb-icon">▤</span> SQL</div>
+    </div>
+  </div>
+</section>
+
+<div class="term-wrap reveal" id="terminal">
+  <div class="terminal scanlines">
+    <div class="term-bar">
+      <div class="term-dot" style="background:#ff5f57;"></div>
+      <div class="term-dot" style="background:#febc2e;"></div>
+      <div class="term-dot" style="background:#28c840;"></div>
+      <span class="term-title">~/portfolio</span>
+    </div>
+    <div class="term-body" id="termBody">
+      <div class="term-out">Welcome to Famous Dhungana's interactive CV shell.</div>
+      <div class="term-input-row term-inline">
+        <span class="prompt">famous@portfolio</span><span class="path">:~$</span>
+        <input id="term-input" type="text" autocomplete="off" spellcheck="false" placeholder="type a command…" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="block reveal" id="experience">
+  <div class="tag-row"><div class="tag-num">01</div><div class="tag-title">Experience</div><div class="tag-line"></div></div>
+  <div id="experience-list"></div>
+</section>
+
+<section class="block reveal" id="projects">
+  <div class="tag-row"><div class="tag-num">02</div><div class="tag-title">Projects</div><div class="tag-line"></div></div>
+  <div class="proj-grid" id="project-list"></div>
+</section>
+
+<section class="block reveal" id="certifications">
+  <div class="tag-row"><div class="tag-num">03</div><div class="tag-title">Training &amp; Certifications</div><div class="tag-line"></div></div>
+  <div class="cert-grid" id="cert-list" aria-label="Certificates"></div>
+</section>
+
+<section class="block reveal" id="skills">
+  <div class="tag-row"><div class="tag-num">04</div><div class="tag-title">Skills</div><div class="tag-line"></div></div>
+  <div class="skills-json mono" id="skills-json"></div>
+</section>
+
+<footer id="contact" class="reveal">
+  <div class="hire-badge"><span class="dot"></span> Available for work</div>
+  <h2 id="contact-heading">Looking to hire? <span class="accent">Let's talk.</span></h2>
+  <p id="contact-desc">Based in New Thimi, Bhaktapur — I reply fast.</p>
+  <div class="contact-row">
+    <a class="btn btn-primary" id="contact-email" href="mailto:famousdhungana98@gmail.com">✉ Email me</a>
+    <a class="btn btn-ghost" id="contact-phone" href="tel:9862054480">☎ 9862054480</a>
+  </div>
+  <div class="foot-bottom">root@portfolio:~$ echo "thanks for scrolling" · built with terminal energy</div>
+</footer>
+
+<script>
+// ---------- Certifications ----------
+const baseCertificates = [
+  { name: 'Introduction to Cybersecurity', org: 'Cisco' },
+  { name: 'Information Security Awareness, NSE 1', org: 'Fortinet' },
+  { name: 'Certified Network Security Practitioner (CNSP)', org: 'The SecOps Group' },
+  { name: 'CompTIA Security+', org: 'Udemy' },
+  { name: 'Active Directory Basics', org: 'Udemy' },
+  { name: 'APISec Certified Practitioner (ACP)', org: 'APISec University' },
+  { name: 'Cyber Security 101 / Pre Security', org: 'TryHackMe' },
+  { name: 'Governance, Risk & Compliance (GRC)', org: 'SecurityPal' },
+  { name: 'Cyber Ready Nepal Program', org: 'Eminence Ways Pvt. Ltd' }
+];
+const STORAGE_KEY_CERTS = 'portfolio-private-certs';
+const STORAGE_KEY_DATA = 'portfolio-private-data';
+
+function loadPrivateCertificates(){
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY_CERTS) || '[]'); } catch { return []; }
+}
+
+function savePrivateCertificates(list){
+  localStorage.setItem(STORAGE_KEY_CERTS, JSON.stringify(list));
+}
+
+function loadPrivateData(){
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY_DATA) || '{}'); } catch { return {}; }
+}
+
+function savePrivateData(data){
+  localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(data));
+}
+
+let privateCertificates = loadPrivateCertificates();
+let privateData = loadPrivateData();
+
+function escapeHtml(value = '') {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function getHeroData(){
+  const hero = privateData.hero;
+  if (hero && typeof hero === 'object') {
+    return {
+      name: hero.name || 'Famous',
+      accent: hero.accent || 'Dhungana',
+      role: hero.role || 'cybersecurity · linux',
+      tagline: hero.tagline || 'I break things to understand them, then build things that don\'t break. Hunting vulnerabilities by day and building practical projects by night.',
+      resume: hero.resume || 'Famous_Dhungana_Resume.pdf'
+    };
+  }
+  return {
+    name: 'Famous',
+    accent: 'Dhungana',
+    role: 'cybersecurity · linux',
+    tagline: 'I break things to understand them, then build things that don\'t break. Hunting vulnerabilities by day and building practical projects by night.',
+    resume: 'Famous_Dhungana_Resume.pdf'
+  };
+}
+
+function renderHero(){
+  const hero = getHeroData();
+  const heroName = document.getElementById('hero-name');
+  const heroAccent = document.getElementById('hero-accent');
+  const heroRole = document.getElementById('hero-role');
+  const heroTagline = document.getElementById('hero-tagline');
+  const heroResume = document.getElementById('hero-resume');
+  if (!heroName || !heroAccent || !heroRole || !heroTagline || !heroResume) return;
+  const [first, second] = hero.name.split(' ');
+  heroName.innerHTML = `${escapeHtml(first || 'Famous')}<br><span class="accent">${escapeHtml(second || hero.accent)}</span>`;
+  heroRole.textContent = hero.role;
+  heroTagline.textContent = hero.tagline;
+  heroResume.href = hero.resume;
+  heroResume.setAttribute('download', hero.resume.split('/').pop());
+}
+
+function getContactData(){
+  const contact = privateData.contact;
+  if (contact && typeof contact === 'object') {
+    return {
+      heading: contact.heading || 'Looking to hire? Let\'s talk.',
+      desc: contact.desc || 'Based in New Thimi, Bhaktapur — I reply fast.',
+      email: contact.email || 'famousdhungana98@gmail.com',
+      phone: contact.phone || '9862054480'
+    };
+  }
+  return {
+    heading: 'Looking to hire? Let\'s talk.',
+    desc: 'Based in New Thimi, Bhaktapur — I reply fast.',
+    email: 'famousdhungana98@gmail.com',
+    phone: '9862054480'
+  };
+}
+
+function renderContact(){
+  const contact = getContactData();
+  const contactHeading = document.getElementById('contact-heading');
+  const contactDesc = document.getElementById('contact-desc');
+  const contactEmail = document.getElementById('contact-email');
+  const contactPhone = document.getElementById('contact-phone');
+  if (!contactHeading || !contactDesc || !contactEmail || !contactPhone) return;
+  contactHeading.innerHTML = escapeHtml(contact.heading);
+  contactDesc.textContent = contact.desc;
+  contactEmail.href = `mailto:${contact.email}`;
+  contactEmail.textContent = `✉ ${contact.email}`;
+  contactPhone.href = `tel:${contact.phone}`;
+  contactPhone.textContent = `☎ ${contact.phone}`;
+}
+
+function getExperienceData(){
+  if (Array.isArray(privateData.experience) && privateData.experience.length) return privateData.experience;
+  return [
+    {
+      date: 'Mar 2026 — Jun 2026',
+      role: 'Cybersecurity Intern',
+      org: 'Eminence Ways Pvt. Ltd',
+      location: 'Remote · Kathmandu',
+      details: [
+        'Completed practical training covering web security, network security, cloud security, and security auditing',
+        'Performed vulnerability assessments and studied information security fundamentals',
+        'Participated in guided labs, strengthening understanding of cybersecurity threats and defensive practices'
+      ]
+    },
+    {
+      date: '2025',
+      role: 'General Manager, Leadership',
+      org: 'MBM IdeaX 2025',
+      details: ['Led the organizing team and coordinated participants, logistics, and operations for a nationwide hackathon in Nepal']
+    }
+  ];
+}
+
+function renderExperience(){
+  const experienceList = document.getElementById('experience-list');
+  if (!experienceList) return;
+  const experience = getExperienceData();
+
+  experienceList.innerHTML = experience.map(item => `
+    <div class="exp-item">
+      <div class="exp-date">${escapeHtml(item.date)}</div>
+      <div>
+        <div class="exp-role">${escapeHtml(item.role)}</div>
+        <div class="exp-org">${escapeHtml(item.org)}</div>
+        ${item.location ? `<div class="exp-loc">${escapeHtml(item.location)}</div>` : ''}
+        <ul class="exp-list">
+          ${item.details.map(detail => `<li>${escapeHtml(detail)}</li>`).join('')}
+        </ul>
+      </div>
+    </div>
+  `).join('');
+}
+
+function getProjectData(){
+  if (Array.isArray(privateData.projects) && privateData.projects.length) return privateData.projects;
+  return [
+    {
+      path: '~/projects/ecolog',
+      title: 'Ecolog',
+      badge: '🏆 Hackathon Project · Showcase Winner',
+      description: 'An environmental monitoring system built on Raspberry Pi that listens for forest fires and gunshots, pairing hardware integration with a real-time alert pipeline.',
+      chips: ['Raspberry Pi','Hardware','Real-time alerts'],
+      detail: 'My focus: hardware integration — wiring up the Pi\'s sensors and getting fire/gunshot signals to trigger alerts reliably in real time, rather than the software layer alone.<br><br>Outcome: the project was recognized as the winning entry at the Project Showcase competition for its innovation and how well the team worked together under time pressure.',
+      link: 'https://github.com/prasiddha98/Project-Ecolog'
+    },
+    {
+      path: '~/projects/lab-link',
+      title: 'Lab-Link',
+      badge: '⚡ TechSprint: Hack The Throne',
+      description: 'An academic management platform with QR-code record access and role-based portals, modernizing the academic evaluation workflow end to end.',
+      chips: ['React','Vite','Tailwind CSS','Node.js'],
+      detail: 'The problem: academic record-keeping and evaluation were scattered across paper and disconnected tools.<br><br>The fix: QR codes give instant access to a student\'s record, while role-based portals mean students, teachers, and admins each see exactly what they need — nothing more.',
+      link: 'https://github.com/prasiddha98/TechSprint_HackTheThrone'
+    },
+    {
+      path: '~/projects/gharkhoj',
+      title: 'GharKhoj',
+      description: 'A rental recommendation system that helps people find rooms and rental homes that actually match what they\'re looking for, matching listings to a renter\'s preferences and location instead of leaving them to scroll endlessly.',
+      chips: ['Recommendation Engine','Python','Web App'],
+      detail: 'The problem: rental hunting in most listing apps means scrolling through everything, with no sense of what actually fits you.<br><br>The fix: a recommendation layer that ranks listings against a renter\'s preferences and location, so the first results are the most relevant ones — not just the newest ones.',
+      link: 'https://github.com/prasiddha98/Ghar_Khoj/tree/master'
+    },
+    {
+      path: '~/projects/student-leave-management',
+      title: 'Student Leave Management System',
+      description: 'A web-based system for students and staff to submit, track, and approve leave requests — replacing the manual, paper-based approval process with a single online workflow.',
+      chips: ['Web App','CRUD','Approval Workflow'],
+      detail: 'The problem: leave requests moving through paper forms and in-person sign-offs are slow and easy to lose track of.<br><br>The fix: a shared system where students submit requests, staff review and approve or reject them, and everyone can see status at a glance.',
+      link: 'https://github.com/prasiddha98/Student-Leave-Management-System'
+    },
+    {
+      path: '~/projects/greet_terminal',
+      title: 'Greet Terminal',
+      description: 'A custom terminal greeter that runs on shell startup — the same kind of idea powering the terminal on this very page, showing personalized info the moment a session opens.',
+      chips: ['Shell Scripting','CLI','Linux'],
+      detail: 'The problem: a stock terminal gives you nothing but a blank prompt when you log in.<br><br>The fix: a lightweight greeter script that surfaces useful info right when a shell session starts, instead of a blank prompt.',
+      link: 'https://github.com/prasiddha98/greet_terminal'
+    }
+  ];
+}
+
+function renderProjects(){
+  const projectList = document.getElementById('project-list');
+  if (!projectList) return;
+  const projects = getProjectData();
+
+  projectList.innerHTML = projects.map(proj => `
+    <div class="proj-card">
+      <div class="proj-file">${escapeHtml(proj.path)}</div>
+      ${proj.badge ? `<div class="proj-badge">${escapeHtml(proj.badge)}</div>` : ''}
+      <h3>${escapeHtml(proj.title)}</h3>
+      <p>${escapeHtml(proj.description)}</p>
+      <div class="stack-row">
+        ${proj.chips.map(chip => `<span class="chip">${escapeHtml(chip)}</span>`).join('')}
+      </div>
+      <div class="proj-detail"><div class="proj-detail-inner">${proj.detail.replace(/(^|<br>)([^:<>]+):/gi, '$1<span class="proj-detail-prefix">$2</span>:')}</div></div>
+      <div class="proj-actions">
+        <button type="button" class="proj-toggle"><span class="chev">▾</span> <span class="label">View details</span></button>
+        ${proj.link ? `<a class="proj-code" href="${escapeHtml(proj.link)}" target="_blank" rel="noopener">⌥ View Code ↗</a>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function getSkillData(){
+  const skills = privateData.skills;
+  if (skills && typeof skills === 'object') {
+    const tools = Array.isArray(skills.tools) ? skills.tools : [];
+    const languages_programming = Array.isArray(skills.languages_programming)
+      ? skills.languages_programming
+      : Array.isArray(skills.languages) ? skills.languages : [];
+    const languages_spoken = Array.isArray(skills.languages_spoken)
+      ? skills.languages_spoken
+      : Array.isArray(skills.spoken) ? skills.spoken : [];
+
+    if (tools.length || languages_programming.length || languages_spoken.length) {
+      return { tools, languages_programming, languages_spoken };
+    }
+  }
+
+  return {
+    tools: ['Linux','Git','GitHub','VirtualBox','Burp Suite','Nmap','Django','WordPress'],
+    languages_programming: ['Python','C++','C','JavaScript','PHP','SQL'],
+    languages_spoken: ['Nepali','English','Hindi']
+  };
+}
+
+function renderSkills(){
+  const skillsContainer = document.getElementById('skills-json');
+  if (!skillsContainer) return;
+  const skills = getSkillData();
+
+  const jsonLines = [
+    '{',
+    ...Object.entries(skills).map(([key, values], idx, arr) => {
+      const comma = idx === arr.length - 1 ? '' : ',';
+      return `  "${escapeHtml(key)}": [${values.map(v => `<span class="s">\"${escapeHtml(v)}\"</span>`).join(', ')}]${comma}`;
+    }),
+    '}'
+  ];
+
+  skillsContainer.innerHTML = jsonLines.map(line => {
+    return line
+      .replace(/^\{/, '<span class="p">{</span>')
+      .replace(/\}$/, '<span class="p">}</span>')
+      .replace(/"([^"]+)":/, '<span class="k">"$1"</span>:');
+  }).join('<br>');
+}
+
+function renderCertificates(){
+  const certList = document.getElementById('cert-list');
+  if (!certList) return;
+  const privateCerts = loadPrivateCertificates();
+  const allCertificates = [...baseCertificates, ...privateCerts];
+
+  certList.innerHTML = allCertificates.map(cert => {
+    const actions = [];
+    if (cert.link) {
+      actions.push(`<a class="cert-link-btn" href="${escapeHtml(cert.link)}" target="_blank" rel="noopener">↗ View link</a>`);
+    }
+    if (cert.image) {
+      actions.push(`<button class="cert-link-btn" onclick="toggleImage(event)" type="button">🖼 View cert</button>`);
+    }
+
+    return `
+      <article class="cert-card">
+        <div class="cert-card-head">
+          <div>
+            <h4>${escapeHtml(cert.name)}</h4>
+            <div class="cert-org">${escapeHtml(cert.org)}</div>
+          </div>
+          <span class="check">✓</span>
+        </div>
+        ${actions.length ? `<div class="cert-actions">${actions.join('')}</div>` : ''}
+        ${cert.image ? `<img class="cert-image" src="${escapeHtml(cert.image)}" alt="${escapeHtml(cert.name)} certificate" onclick="openCertModal(event)">` : ''}
+      </article>
+    `;
+  }).join('');
+}
+
+function renderPortfolioSections(){
+  renderHero();
+  renderContact();
+  renderExperience();
+  renderProjects();
+  renderSkills();
+  renderCertificates();
+}
+
+renderPortfolioSections();
+
+function toggleImage(e){
+  e.preventDefault();
+  const card = e.target.closest('.cert-card');
+  const img = card.querySelector('.cert-image');
+  if (img) img.classList.toggle('shown');
+}
+
+function openCertModal(e){
+  e.preventDefault();
+  const modal = document.getElementById('cert-modal');
+  if (modal) {
+    modal.querySelector('.modal-img').src = e.target.src;
+    modal.classList.add('active');
+  }
+}
+
+// Modal close handler
+if (document.getElementById('cert-modal')) {
+  document.getElementById('cert-modal').addEventListener('click', function(e){
+    if (e.target === this) this.classList.remove('active');
+  });
+  document.querySelector('.cert-modal-close').addEventListener('click', function(){
+    document.getElementById('cert-modal').classList.remove('active');
+  });
+}
+
+// ---------- Boot sequence ----------
+const bootLines = [
+  { text: "$ whoami", tag:false, delay: 0 },
+  { text: "loading profile.......... [OK]", ok:true, delay: 260 },
+  { text: "mounting /experience...... [OK]", ok:true, delay: 200 },
+  { text: "mounting /projects........ [OK]", ok:true, delay: 200 },
+  { text: "initializing skillset..... [OK]", ok:true, delay: 200 },
+  { text: "checking security clearance... GRANTED", ok:true, delay: 220 },
+];
+const bootLog = document.getElementById('bootLog');
+let bi = 0;
+function typeBoot(){
+  if(bi >= bootLines.length) return;
+  const line = bootLines[bi];
+  const div = document.createElement('div');
+  div.innerHTML = line.ok ? line.text.replace('[OK]','<span class="ok">[OK]</span>').replace('GRANTED','<span class="ok">GRANTED</span>') : '<span class="tag">'+line.text+'</span>';
+  bootLog.appendChild(div);
+  bi++;
+  setTimeout(typeBoot, line.delay + 180);
+}
+setTimeout(typeBoot, 200);
+
+// ---------- Terminal ----------
+const termBody = document.getElementById('termBody');
+const termInput = document.getElementById('term-input');
+const cmdHistory = [];
+let historyIndex = 0;
+
+function moveInputToBottom(){
+  const inputRow = termBody.querySelector('.term-input-row');
+  if (inputRow) {
+    termBody.appendChild(inputRow);
+  }
+}
+
+function scrollTerminalToBottom(){
+  // intentionally empty: no auto-scroll unless user leaves the terminal
+}
+
+function printLine(html, cls){
+  const d = document.createElement('div');
+  d.className = cls || 'term-out';
+  d.innerHTML = html;
+  termBody.appendChild(d);
+  moveInputToBottom();
+}
+function printCommand(cmd){
+  printLine('<span class="prompt">famous@portfolio</span><span class="path">:~$</span> <span class="cmdtext">'+cmd+'</span>', 'term-line');
+}
+
+const fileSystem = {
+  'about.txt': 'CSIT student with interests in cybersecurity, Linux systems, and software development.',
+  'experience.log': 'Cybersecurity Intern — Eminence Ways Pvt. Ltd\nGeneral Manager — MBM IdeaX 2025',
+  'skills.json': '{"tools":["Linux","Git","GitHub","VirtualBox","Burp Suite","Nmap","Django","WordPress"],"languages":["Python","C++","C","JavaScript","PHP","SQL"]}',
+  'contact.txt': 'Email: famousdhungana98@gmail.com\nPhone: 9862054480\nBased in: New Thimi, Bhaktapur, Nepal',
+  'certs.txt': 'Introduction to Cybersecurity — Cisco\nInformation Security Awareness, NSE 1 — Fortinet\nCertified Network Security Practitioner (CNSP) — The SecOps Group',
+  'projects': 'Directory containing ecolog, lab-link, gharkhoj, student-leave-management, greet_terminal'
+};
+
+const commands = {
+  help: () => `Available commands:
+  <span class="hi">whoami</span>        — who is Famous?
+  <span class="hi">about</span>         — profile summary
+  <span class="hi">experience</span>    — work history
+  <span class="hi">projects</span>      — ls ~/projects
+  <span class="hi">github</span>        — repo links for every project
+  <span class="hi">skills</span>       — tech stack
+  <span class="hi">certs</span>        — certifications
+  <span class="hi">contact</span>       — get in touch
+  <span class="hi">clear</span>        — clear the screen
+  <span class="hi">cat</span>           — read a file (for example: cat about.txt)
+
+tip: press ↑ / ↓ to cycle through your command history`,
+
+  whoami: () => `<span class="cy">famous_dhungana</span> — CSIT student, Bhaktapur, Nepal.
+Cybersecurity intern · Linux tinkerer.`,
+
+  about: () => `CSIT student with interests in cybersecurity, Linux systems, and
+software development. Quick learner with hands-on project experience,
+problem-solving ability, and strong teamwork skills.`,
+
+  experience: () => `<span class="hi">Cybersecurity Intern</span> — Eminence Ways Pvt. Ltd  <span class="cy">(Mar 2026 – Jun 2026)</span>
+  · Practical training: Web/Network/Cloud Security, Security Auditing
+  · Performed vulnerability assessments
+  · Guided labs on cybersecurity threats & defensive practices
+
+<span class="hi">General Manager, Leadership</span> — MBM IdeaX 2025
+  · Led organizing team for a nationwide hackathon in Nepal`,
+
+  projects: () => `total 5
+drwxr-xr-x  <span class="cy">ecolog/</span>                     — Raspberry Pi wildfire & gunshot detection 🏆 Showcase Winner
+drwxr-xr-x  <span class="cy">lab-link/</span>                   — academic management platform ⚡ TechSprint: Hack The Throne
+drwxr-xr-x  <span class="cy">gharkhoj/</span>                   — rental recommendation system (Python)
+drwxr-xr-x  <span class="cy">student-leave-management/</span>  — leave request & approval workflow
+drwxr-xr-x  <span class="cy">greet_terminal/</span>             — custom shell greeter (CLI)
+
+type <span class="hi">github</span> for repo links`,
+
+  github: () => `<span class="cy">ecolog</span>                     https://github.com/prasiddha98/Project-Ecolog
+<span class="cy">lab-link</span>                   https://github.com/prasiddha98/TechSprint_HackTheThrone
+<span class="cy">gharkhoj</span>                   https://github.com/prasiddha98/Ghar_Khoj
+<span class="cy">student-leave-management</span>  https://github.com/prasiddha98/Student-Leave-Management-System
+<span class="cy">greet_terminal</span>             https://github.com/prasiddha98/greet_terminal`,
+
+  skills: () => `tools:      Linux, Git, GitHub, VirtualBox, Burp Suite, Nmap, Django, WordPress
+languages:  Python, C++, C, JavaScript, PHP, SQL
+spoken:     Nepali, English, Hindi`,
+
+  certs: () => `<span class="gr">✓</span> Introduction to Cybersecurity — Cisco
+<span class="gr">✓</span> Information Security Awareness, NSE 1 — Fortinet
+<span class="gr">✓</span> Certified Network Security Practitioner (CNSP) — The SecOps Group
+<span class="gr">✓</span> CompTIA Security+ — Udemy
+<span class="gr">✓</span> Active Directory Basics — Udemy
+<span class="gr">✓</span> APISec Certified Practitioner (ACP) — APISec University
+<span class="gr">✓</span> Cyber Security 101 / Pre Security — TryHackMe
+<span class="gr">✓</span> Governance, Risk & Compliance (GRC) — SecurityPal
+<span class="gr">✓</span> Cyber Ready Nepal Program — Eminence Ways Pvt. Ltd`,
+
+  contact: () => `email:  <span class="cy">famousdhungana98@gmail.com</span>
+phone:  <span class="cy">9862054480</span>
+based:  New Thimi, Bhaktapur, Nepal`,
+
+  ls: () => `about.txt  experience.log  projects/  skills.json  certs.txt  contact.txt`,
+
+  cat: (args) => {
+    const target = args[0] || '';
+    const content = fileSystem[target];
+    if (!content) return `cat: ${target || 'file'}: No such file or directory`;
+    return content.replace(/\n/g, '<br>');
+  },
+
+  clear: () => {
+    Array.from(termBody.children).forEach(child => {
+      if (!child.classList.contains('term-input-row')) child.remove();
+    });
+    moveInputToBottom();
+    return null;
+  },
+
+  sudo: (args) => {
+    if(args.join(' ').includes('make-coffee')) return `☕ brewing... coffee ready. you now have +10 focus.`;
+    return `famous is not in the sudoers file. this incident will be reported.`;
+  },
+  date: () => new Date().toString(),
+  matrix: () => `wake up, neo... (just kidding — try <span class="hi">projects</span> instead)`,
+};
+
+function autocompleteInput(){
+  const value = termInput.value.trim();
+  const words = value.split(/\s+/);
+  const current = words[words.length - 1];
+  const candidates = [...Object.keys(commands), ...Object.keys(fileSystem)].filter(item => item.startsWith(current));
+  if (candidates.length === 1) {
+    words[words.length - 1] = candidates[0];
+    termInput.value = words.join(' ');
+    return true;
+  }
+  return false;
+}
+
+function newPromptLine(){
+  const spacer = document.createElement('div');
+  spacer.className = 'term-out';
+  spacer.innerHTML = '&nbsp;';
+  termBody.appendChild(spacer);
+  moveInputToBottom();
+  setTimeout(() => termInput.focus(), 0);
+}
+
+function runCommand(raw){
+  const trimmed = raw.trim();
+  if(trimmed.length === 0) return;
+  printCommand(trimmed);
+  newPromptLine();
+  const parts = trimmed.split(/\s+/);
+  const cmd = parts[0].toLowerCase();
+  const args = parts.slice(1);
+
+  if(cmd === 'clear'){ commands.clear(); return; }
+
+  if(fileSystem.hasOwnProperty(cmd)){
+    printLine(fileSystem[cmd].replace(/\n/g, '<br>'));
+    return;
+  }
+
+  if(commands.hasOwnProperty(cmd)){
+    const out = commands[cmd](args);
+    if(out !== null && out !== undefined) printLine(out);
+  } else {
+    printLine(`command not found: <span style="color:var(--red)">${cmd}</span> — type <span class="hi">help</span> for a list.`);
+  }
+}
+
+termInput.addEventListener('keydown', function(e){
+  if(e.key === 'Tab'){
+    e.preventDefault();
+    autocompleteInput();
+  } else if(e.key === 'Enter'){
+    if(termInput.value.trim().length > 0){
+      cmdHistory.push(termInput.value);
+    }
+    historyIndex = cmdHistory.length;
+    runCommand(termInput.value);
+    termInput.value = '';
+  } else if(e.key === 'ArrowUp'){
+    if(cmdHistory.length === 0) return;
+    e.preventDefault();
+    historyIndex = Math.max(0, historyIndex - 1);
+    termInput.value = cmdHistory[historyIndex] || '';
+    setTimeout(() => termInput.setSelectionRange(termInput.value.length, termInput.value.length), 0);
+  } else if(e.key === 'ArrowDown'){
+    if(cmdHistory.length === 0) return;
+    e.preventDefault();
+    historyIndex = Math.min(cmdHistory.length, historyIndex + 1);
+    termInput.value = cmdHistory[historyIndex] || '';
+    setTimeout(() => termInput.setSelectionRange(termInput.value.length, termInput.value.length), 0);
+  }
+});
+
+// focus terminal input when clicking anywhere in the terminal body
+document.querySelector('.terminal').addEventListener('click', () => termInput.focus());
+
+// scroll to terminal when cursor leaves it
+termInput.addEventListener('blur', () => {
+  setTimeout(() => scrollTerminalToBottom(), 0);
+});
+
+// ---------- Private certificate setup ----------
+const privateForm = document.getElementById('private-cert-form');
+const privateStatus = document.getElementById('private-status');
+
+function setPrivateStatus(message, isError = false) {
+  if (!privateStatus) return;
+  privateStatus.textContent = message;
+  privateStatus.style.color = isError ? 'var(--red)' : 'var(--green)';
+}
+
+function readFileAsDataUrl(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+if (privateForm) {
+  privateForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const title = document.getElementById('cert-title').value.trim();
+    const org = document.getElementById('cert-org').value.trim();
+    const link = document.getElementById('cert-link').value.trim();
+    const imageUrl = document.getElementById('cert-image-url').value.trim();
+    const fileInput = document.getElementById('cert-file');
+    const notes = document.getElementById('cert-notes').value.trim();
+
+    if (!title || !org) {
+      setPrivateStatus('Please add a certificate title and organization.', true);
+      return;
+    }
+
+    let image = '';
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+      try {
+        image = await readFileAsDataUrl(fileInput.files[0]);
+      } catch (error) {
+        setPrivateStatus('Could not read the uploaded file.', true);
+        return;
+      }
+    } else if (imageUrl) {
+      image = imageUrl;
+    }
+
+    privateCertificates = [
+      ...privateCertificates,
+      { name: title, org, link, image, notes }
+    ];
+    savePrivateCertificates(privateCertificates);
+    renderCertificates();
+    privateForm.reset();
+    setPrivateStatus('Certificate saved. It will appear in the list soon.');
+  });
+}
+
+// ---------- Scroll reveal ----------
+const revealEls = document.querySelectorAll('.reveal');
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(prefersReducedMotion){
+  revealEls.forEach(el => el.classList.add('visible'));
+} else {
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => revealObserver.observe(el));
+}
+
+// ---------- Project card expand/collapse ----------
+document.querySelectorAll('.proj-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const card = btn.closest('.proj-card');
+    const expanded = card.classList.toggle('expanded');
+    btn.querySelector('.chev').style.transform = expanded ? 'rotate(180deg)' : 'rotate(0deg)';
+    btn.querySelector('.label').textContent = expanded ? 'Hide details' : 'View details';
+  });
+});
+</script>
+
+<!-- Certificate Modal -->
+<div id="cert-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;justify-content:center;align-items:center;padding:20px;">
+  <div style="position:relative;max-width:90%;max-height:90%;display:flex;justify-content:center;align-items:center;">
+    <img id="cert-modal-image" src="" alt="Certificate" style="max-width:100%;max-height:100%;border-radius:8px;">
+    <button id="cert-modal-close" style="position:absolute;top:10px;right:10px;background:var(--amber);color:#0a0d12;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-weight:700;">✕ Close</button>
+  </div>
+</div>
+
+<script>
+  function openCertModal(e) {
+    const img = e.target.closest('.cert-card').querySelector('.cert-image');
+    const modal = document.getElementById('cert-modal');
+    const modalImg = document.getElementById('cert-modal-image');
+    if (img && img.src) {
+      modalImg.src = img.src;
+      modal.style.display = 'flex';
+    }
+  }
+  document.getElementById('cert-modal-close').addEventListener('click', () => {
+    document.getElementById('cert-modal').style.display = 'none';
+  });
+  document.getElementById('cert-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'cert-modal') document.getElementById('cert-modal').style.display = 'none';
+  });
+</script>
+
+</body>
+</html>

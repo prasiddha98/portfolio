@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Private Access</title>
+  <link rel="icon" href="fambug.jpg" type="image/jpeg">
+  <style>
+    :root{ --void:#0a0d12; --panel:#10151c; --border:#232b36; --text:#dfe6ee; --muted:#7c8a9a; --amber:#ffb454; --green:#8bd17c; --red:#ff6b6b; }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:Inter, Arial, sans-serif;background:var(--void);color:var(--text);min-height:100vh;display:grid;place-items:center;padding:24px;}
+    .box{width:min(100%, 420px);background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,0.25);} 
+    h1{font-size:24px;margin-bottom:8px;}
+    p{color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:18px;}
+    input, button{width:100%;padding:12px;border-radius:8px;border:1px solid var(--border);background:#0e1419;color:var(--text);font-size:14px;}
+    button{margin-top:12px;cursor:pointer;background:var(--amber);color:#0a0d12;border:none;font-weight:700;}
+    .msg{margin-top:12px;min-height:20px;font-size:13px;color:var(--green);}
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Private access</h1>
+    <p>Enter your username and password to manage certificates privately.</p>
+    <form id="login-form">
+      <input id="user" type="text" placeholder="Username" required autocomplete="off">
+      <input id="pass" type="password" placeholder="Password" required autocomplete="off">
+      <button type="submit">Enter</button>
+    </form>
+    <div id="msg" class="msg"></div>
+  </div>
+  <script>
+    const validUser = 'famous';
+    const validPass = 'manteen';
+    let attempts = 0;
+    const MAX_ATTEMPTS = 2;
+    const LOCKOUT_TIME = 300000;
+    const ATTEMPT_KEY = 'login-attempts';
+    const LOCKOUT_KEY = 'login-lockout';
+
+    function isLocked(){
+      const lockout = localStorage.getItem(LOCKOUT_KEY);
+      if (!lockout) return false;
+      const lockTime = parseInt(lockout);
+      if (Date.now() < lockTime) return true;
+      localStorage.removeItem(LOCKOUT_KEY);
+      localStorage.removeItem(ATTEMPT_KEY);
+      return false;
+    }
+
+    function recordAttempt(){
+      attempts = parseInt(localStorage.getItem(ATTEMPT_KEY) || '0') + 1;
+      localStorage.setItem(ATTEMPT_KEY, attempts.toString());
+      if (attempts >= MAX_ATTEMPTS) {
+        localStorage.setItem(LOCKOUT_KEY, (Date.now() + LOCKOUT_TIME).toString());
+      }
+    }
+
+    function resetAttempts(){
+      localStorage.removeItem(ATTEMPT_KEY);
+      localStorage.removeItem(LOCKOUT_KEY);
+    }
+
+    document.getElementById('login-form').addEventListener('submit', function(e){
+      e.preventDefault();
+      const msg = document.getElementById('msg');
+      const userInput = document.getElementById('user');
+      const passInput = document.getElementById('pass');
+
+      if (isLocked()){
+        msg.textContent = 'Too many attempts. Try again in 5 minutes.';
+        msg.style.color = '#ff6b6b';
+        userInput.disabled = true;
+        passInput.disabled = true;
+        return;
+      }
+
+      const user = userInput.value.trim();
+      const pass = passInput.value;
+
+      if (user === validUser && pass === validPass){
+        resetAttempts();
+        msg.textContent = 'Redirecting...';
+        msg.style.color = '#8bd17c';
+        setTimeout(() => { window.location.href = 'private_stuff.html'; }, 500);
+      } else {
+        recordAttempt();
+        const remaining = MAX_ATTEMPTS - attempts;
+        if (remaining > 0) {
+          msg.textContent = `Invalid credentials. ${remaining} attempt${remaining > 1 ? 's' : ''} remaining.`;
+        } else {
+          msg.textContent = 'Account locked. Try again in 5 minutes.';
+        }
+        msg.style.color = '#ff6b6b';
+        passInput.value = '';
+      }
+    });
+
+    if (isLocked()){
+      document.getElementById('user').disabled = true;
+      document.getElementById('pass').disabled = true;
+      document.querySelector('button').disabled = true;
+      document.getElementById('msg').textContent = 'Account locked. Try again in 5 minutes.';
+      document.getElementById('msg').style.color = '#ff6b6b';
+    }
+  </script>
+</body>
+</html>

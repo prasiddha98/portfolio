@@ -428,7 +428,7 @@
       <div class="role"><span class="bracket">[</span>cybersecurity <span class="bracket">·</span> linux <span class="bracket">·</span> builder<span class="bracket">]</span></div>
       <p class="tagline">I break things to understand them, then build things that don't break. Hunting vulnerabilities by day and building practical projects by night.</p>
       <div class="hero-actions">
-        <a class="btn btn-primary" id="downloadBtn" download="Famous_Dhungana_Resume.pdf" href="#">
+        <a class="btn btn-primary" id="downloadBtn" download="Famous_Dhungana-Resume.pdf" href="#">
           ⭳ Download Resume <small>.pdf</small>
         </a>
       </div>
@@ -642,7 +642,7 @@ Type <span class="hi">help</span> to see available commands.</div>
   <div class="contact-row">
     <a class="btn btn-primary" href="mailto:famousdhungana98@gmail.com">✉ Email me</a>
     <a class="btn btn-ghost" href="tel:9862054480">☎ 9862054480</a>
-    <a class="btn btn-ghost" id="downloadBtnFooter" download="Famous_Dhungana_Resume.pdf" href="#">⭳ Resume</a>
+    <a class="btn btn-ghost" id="downloadBtnFooter" download="Famous_Dhungana-Resume.pdf" href="#">⭳ Resume</a>
   </div>
   <div class="foot-bottom">root@portfolio:~$ echo "thanks for scrolling" · built with terminal energy</div>
 </footer>
@@ -654,7 +654,7 @@ function triggerResumeDownload(e){
   if(e) e.preventDefault();
   const link = document.createElement('a');
   link.href = "data:application/pdf;base64," + RESUME_BASE64;
-  link.download = "Famous_Dhungana_Resume.pdf";
+  link.download = "Famous_Dhungana-Resume.pdf";
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -813,7 +813,7 @@ based:  New Thimi, Bhaktapur, Nepal`,
 
   download: () => {
     triggerResumeDownload();
-    return `initiating download... <span class="gr">Famous_Dhungana_Resume.pdf</span> ✓`;
+    return `initiating download... <span class="gr">Famous_Dhungana-Resume.pdf</span> ✓`;
   },
   resume: () => commands.download(),
 
